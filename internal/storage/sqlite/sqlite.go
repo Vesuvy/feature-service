@@ -12,7 +12,7 @@ type Storage struct {
 	db *sql.DB
 }
 
-func New(path string) (*Storage, error) {
+func ConnectToDb(path string) (*Storage, error) {
 	db, err := sql.Open("sqlite3", path)
 
 	if err != nil {
@@ -27,9 +27,9 @@ func New(path string) (*Storage, error) {
 }
 
 func (s *Storage) Save(ctx context.Context, feature *models.Feature) error {
-	q := `INSERT INTO features (name, desc, enabled, activationDate, deactivationDate) VALUES (?, ?, ?, ?, ?)`
+	q := `INSERT INTO features (name, desc, enabled, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)`
 
-	if _, err := s.db.ExecContext(ctx, q, feature.Name, feature.Desc, feature.Enabled, feature.ActivationDate, feature.DeactivationDate); err != nil {
+	if _, err := s.db.ExecContext(ctx, q, feature.Name, feature.Desc, feature.Enabled, feature.CreatedAt, feature.UpdatedAt); err != nil {
 		return fmt.Errorf("cant save feature: %w", err)
 	}
 
@@ -45,8 +45,8 @@ func (s *Storage) Pick(ctx context.Context, name string) (*models.Feature, error
 		&feature.Name,
 		&feature.Desc,
 		&feature.Enabled,
-		&feature.ActivationDate,
-		&feature.DeactivationDate,
+		&feature.CreatedAt,
+		&feature.UpdatedAt,
 	); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("feature not found in db: %w", err)
@@ -89,9 +89,9 @@ func (s *Storage) IsExists(ctx context.Context, feature *models.Feature) (bool, 
 	return true, nil
 }
 func (s *Storage) Update(ctx context.Context, feature *models.Feature) error {
-	q := `UPDATE features SET desc = ?, enabled = ?, activationDate = ?, deactivationDate = ? WHERE name = ?`
+	q := `UPDATE features SET desc = ?, enabled = ?, createdAt = ?, updateAt = ? WHERE name = ?`
 
-	if _, err := s.db.ExecContext(ctx, q, feature.Desc, feature.Enabled, feature.ActivationDate, feature.DeactivationDate); err != nil {
+	if _, err := s.db.ExecContext(ctx, q, feature.Desc, feature.Enabled, feature.CreatedAt, feature.UpdatedAt); err != nil {
 		return fmt.Errorf("cant update feature: %w", err)
 	}
 
