@@ -4,14 +4,40 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/Vesuvy/feature-service/internal/config"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"log"
 
 	"github.com/Vesuvy/feature-service/internal/models"
 )
 
-type Storage struct {
-	db *sql.DB
+var DB *gorm.DB
+
+func initDB() {
+	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		config.DBHost, config.DBPort, config.DBUser, config.DBPassword, config.DBName)
+
+	if DB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{}); err == nil {
+		log.Fatalf("Ошибка при подключении в БД: %v", err)
+	}
+
+	DB.AutoMigrate(&models.Feature{},
+		&models.Feature{},
+		&models.Admin{},
+		&models.Category{},
+		&models.Company{},
+		&models.Environment{},
+		&models.Event_Type{},
+		&models.Enviroment_Feature_Category{},
+		&models.Feature_Analytics{},
+		&models.Tag{},
+		&models.User{},
+	)
+
 }
 
+/*
 func ConnectToDb(path string) (*Storage, error) {
 	db, err := sql.Open("sqlite3", path)
 
@@ -25,6 +51,7 @@ func ConnectToDb(path string) (*Storage, error) {
 
 	return &Storage{db: db}, err
 }
+*/
 
 func (s *Storage) Save(ctx context.Context, feature *models.Feature) error {
 	q := `INSERT INTO features (name, desc, enabled, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)`
