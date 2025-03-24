@@ -1,0 +1,28 @@
+.form-container {
+    background: #2d004b;
+    padding: 2rem;
+    border-radius: 12px;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-input, .form-select {
+    width: 100%;
+    padding: 10px;
+    background: #3a006b;
+    border: none;
+    color: white;
+    margin-top: 8px;
+}
+
+.btn_add {
+    bottom: 2rem;
+    right: 2rem;
+    background: #ff6b35;
+    width: 60%;
+    height: 60px;
+    border-radius: 10%;
+    font-size: 20px;
+}

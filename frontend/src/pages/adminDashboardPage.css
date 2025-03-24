@@ -1,0 +1,23 @@
+.container {
+    background: #1a1a1a;
+    color: white;
+    padding: 2rem;
+}
+
+.content__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: #ff6b35;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    font-size: 20px;
+}

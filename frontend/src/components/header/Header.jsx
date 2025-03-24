@@ -1,4 +1,5 @@
 import "./style.css"
+import { Link } from "react-router-dom";
 
 const Header = () => {
     return (
@@ -14,10 +15,10 @@ const Header = () => {
                     <p>Этот сервис предназначен для....</p>
                 </div>
 
-                <a href="#!" className="btn">
-                    Начать
-                </a>
+                <Link to="/auth" className="btn">Регистрация / Вход</Link>
             </div>
+
+
 
         </header>
     )
