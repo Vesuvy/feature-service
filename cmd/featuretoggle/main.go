@@ -1,91 +1,159 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-
 	"github.com/Vesuvy/feature-service/internal/config"
-	"github.com/go-chi/chi/v5"
+	"github.com/Vesuvy/feature-service/internal/middleware"
+	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func main() {
 	port := config.GetPort()
 
-	r := chi.NewRouter()
+	r := gin.Default()
 
-	//(пока для примера)
-	// Роуты для фич
-	r.Route("/features", func(r chi.Router) {
-		r.Get("/", listFeatures)         // Получить список всех фич
-		r.Post("/", createFeature)       // Создать новую фичу
-		r.Get("/{id}", getFeature)       // Получить фичу по ID
-		r.Put("/{id}", updateFeature)    // Обновить фичу
-		r.Delete("/{id}", deleteFeature) // Удалить фичу
-	})
+	// Публичные маршруты
+	r.POST("/login", loginHandler)
+	r.POST("/registration", registerHandler)
 
-	// Роуты для категорий
-	r.Route("/category", func(r chi.Router) {
-		r.Get("/", listCategories)        // Получить список всех категорий
-		r.Post("/", createCategory)       // Создать новую категорию
-		r.Get("/{id}", getCategory)       // Получить категорию по ID
-		r.Put("/{id}", updateCategory)    // Обновить категорию
-		r.Delete("/{id}", deleteCategory) // Удалить категорию
-	})
+	// Защищённые маршруты
+	authGroup := r.Group("/api")
+	authGroup.Use(middleware.AuthMiddleware()) // Применяем middleware ко всей группе
+	{
+		authGroup.GET("/profile", profileHandler)
+		authGroup.POST("/features", createFeatureHandler)
+	}
 
-	fmt.Printf("Сервер запущен на порте %s...\n", port)
-	err := http.ListenAndServe(":"+port, r)
+	// Админские маршруты с дополнительной проверкой
+	adminGroup := r.Group("/admin")
+	adminGroup.Use(middleware.AuthMiddleware())
+	adminGroup.Use(adminCheckMiddleware) // Доп. проверка isAdmin
+	{
+		adminGroup.GET("/stats", adminStatsHandler)
+	}
 
+	err := r.Run(":" + port)
 	if err != nil {
-		panic(err)
-	} // Инициализация chi
+		return
+	}
 }
 
-// Хендлеры для фич
-
-func listFeatures(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Хендлер listFeatures выполнился: Список всех фич"))
+// Дополнительный middleware для проверки админских прав
+func adminCheckMiddleware(c *gin.Context) {
+	isAdmin, exists := c.Get("isAdmin")
+	if !exists || !isAdmin.(bool) {
+		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "требуется доступ администратора"})
+		return
+	}
+	c.Next()
 }
 
-func createFeature(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Хендлер createFeature выполнился: Новая фича создана"))
+// Обработчик входа
+func loginHandler(c *gin.Context) {
+	var credentials struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	if err := c.ShouldBindJSON(&credentials); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "неверный формат данных"})
+		return
+	}
+
+	// Здесь должна быть логика проверки пользователя в БД
+	// Это пример - замените на реальную проверку!
+	if credentials.Email != "admin@example.com" || credentials.Password != "password" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "неверный email или пароль"})
+		return
+	}
+
+	// Генерация JWT токена (упрощённый пример)
+	token := "example_jwt_token" // Замените на реальную генерацию токена
+
+	c.JSON(http.StatusOK, gin.H{
+		"token": token,
+		"user": gin.H{
+			"email":   credentials.Email,
+			"isAdmin": true, // В реальном приложении брать из БД
+		},
+	})
 }
 
-func getFeature(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	w.Write([]byte("Хендлер getFeature выполнился: Получена фича с ID = " + id))
+// Обработчик регистрации
+func registerHandler(c *gin.Context) {
+	var newUser struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+		Company  string `json:"company"`
+	}
+
+	if err := c.ShouldBindJSON(&newUser); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "неверный формат данных"})
+		return
+	}
+
+	// Здесь должна быть логика создания пользователя в БД
+	// Это пример - замените на реальную логику!
+
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "пользователь успешно зарегистрирован",
+		"user": gin.H{
+			"email":   newUser.Email,
+			"company": newUser.Company,
+		},
+	})
 }
 
-func updateFeature(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	w.Write([]byte("Хендлер updateFeature выполнился: Фича с ID = " + id + " обновлена"))
+// Обработчик профиля пользователя
+func profileHandler(c *gin.Context) {
+	// Получаем данные пользователя из контекста (установленные в AuthMiddleware)
+	userID, _ := c.Get("userID")
+	isAdmin, _ := c.Get("isAdmin")
+
+	c.JSON(http.StatusOK, gin.H{
+		"userID":  userID,
+		"isAdmin": isAdmin,
+		"message": "данные профиля",
+		// Добавьте другие данные пользователя по необходимости
+	})
 }
 
-func deleteFeature(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	w.Write([]byte("Хендлер deleteFeature выполнился: Фича с ID = " + id + " удалена"))
+// Обработчик создания фичи
+func createFeatureHandler(c *gin.Context) {
+	var newFeature struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		Enabled     bool   `json:"enabled"`
+	}
+
+	if err := c.ShouldBindJSON(&newFeature); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "неверный формат данных"})
+		return
+	}
+
+	// Здесь логика сохранения фичи в БД
+	// Это пример - замените на реальную логику!
+
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "фича успешно создана",
+		"feature": newFeature,
+	})
 }
 
-// Хендлеры для категорий
+// Обработчик статистики для админа
+func adminStatsHandler(c *gin.Context) {
+	// В реальном приложении здесь запрос к БД для получения статистики
+	// Это пример - замените на реальные данные!
+	stats := gin.H{
+		"totalUsers":     42,
+		"activeFeatures": 15,
+		"usageStats": gin.H{
+			"lastWeek":  1500,
+			"lastMonth": 6500,
+		},
+	}
 
-func listCategories(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Хендлер listCategories выполнился: Список всех категорий"))
-}
-
-func createCategory(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Хендлер createCategory выполнился: Новая категория создана"))
-}
-
-func getCategory(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	w.Write([]byte("Хендлер getCategory выполнился: Получена категория с ID = " + id))
-}
-
-func updateCategory(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	w.Write([]byte("Хендлер updateCategory выполнился: категория с ID = " + id + " обновлена"))
-}
-
-func deleteCategory(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	w.Write([]byte("Хендлер deleteCategory выполнился: Категория с ID = " + id + " удалена"))
+	c.JSON(http.StatusOK, gin.H{
+		"stats": stats,
+	})
 }
