@@ -12,6 +12,9 @@ import CreateCategoryPage from "./pages/CreateCategoryPage.jsx";
 import CreateTagPage from "./pages/CreateTagPage.jsx";
 import DocumentationPage from "./pages/DocumentationPage.jsx";
 import AdminDashboardPage from "./pages/AdminDashboardPage.jsx";
+import AdminLayout from "./layouts/AdminLayout.jsx";
+import CategoriesPage from "./pages/CategoriesPage.jsx";
+import EditCategoryPage from "./pages/EditCategoryPage.jsx";
 
 function App() {
 
@@ -30,6 +33,14 @@ function App() {
                 <Route path="/documentation" element={<DocumentationPage/>}/>
                 <Route path="/adminDashboard" element={<AdminDashboardPage/>}/>
 
+                <Route path="/admin" element={<AdminLayout />}>
+                    <Route path="categories" element={<CategoriesPage />} />
+                    <Route path="categories/createCategory" element={<CreateCategoryPage />} />
+                    <Route path="categories/edit/:id" element={<EditCategoryPage />} />
+
+
+                    {/* Другие админ маршруты */}
+                </Route>
             </Routes>
             <Footer/>
         </Router>
