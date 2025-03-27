@@ -27,7 +27,13 @@ const LoginPage = () => {
 
     return (
         <Container maxWidth="sm">
-            <Box sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Box sx={{
+                mt: 8,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                bgcolor: 'background.paper'
+            }}>
                 <Typography component="h1" variant="h5">
                     Вход в систему
                 </Typography>

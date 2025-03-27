@@ -33,6 +33,11 @@ const isAdmin = () => {
     return user && user.isAdmin;
 };
 
+export const register = async (email, password, company) => {
+    const response = await axios.post(`${API_URL}/registration`, { email, password, company });
+    return response.data;
+};
+
 export default {
     login,
     logout,

@@ -5,6 +5,7 @@ import "time"
 type Admin struct {
 	ID               int       `json:"id"`
 	Email            string    `json:"email"`
-	CompanyId        int       `json:"companyId"`
+	Password         string    `json:"password"`
+	Company          string    `json:"company"`
 	RegistrationDate time.Time `json:"registrationDate"` // дата регистрации админа
 }

@@ -8,12 +8,12 @@ import (
 )
 
 type AdminHandler struct {
-	UserRepository     repository.UserRepository
+	UserRepository     repository.AdminRepository
 	CategoryRepository repository.CategoryRepository
 	// TODO репы тегов и фич
 }
 
-func NewAdminHandler(userRepo repository.UserRepository, categoryRepo repository.CategoryRepository) *AdminHandler {
+func NewAdminHandler(userRepo repository.AdminRepository, categoryRepo repository.CategoryRepository) *AdminHandler {
 	return &AdminHandler{
 		UserRepository:     userRepo,
 		CategoryRepository: categoryRepo,

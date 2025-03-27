@@ -1,17 +1,19 @@
 package handlers
 
 import (
+	"github.com/Vesuvy/feature-service/internal/models"
 	"github.com/Vesuvy/feature-service/internal/repository"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 	"net/http"
 )
 
 type AuthHandler struct {
-	userRepository repository.UserRepository
+	adminRepository repository.AdminRepository
 }
 
-func NewAuthHandler(userRepository repository.UserRepository) *AuthHandler {
-	return &AuthHandler{userRepository: userRepository}
+func NewAuthHandler(adminRepository repository.AdminRepository) *AuthHandler {
+	return &AuthHandler{adminRepository: adminRepository}
 }
 
 // Обработчик входа
@@ -47,22 +49,47 @@ func (h *AuthHandler) LoginHandler(c *gin.Context) {
 // Обработчик регистрации
 func (h *AuthHandler) RegisterHandler(c *gin.Context) {
 	var newUser struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-		Company  string `json:"company"`
+		Email    string `json:"email" binding:"required,email"`
+		Password string `json:"password" binding:"required,min=6"`
+		Company  string `json:"company" binding:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&newUser); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "неверный формат данных"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверные данные: " + err.Error()})
 		return
 	}
 
-	// TODO Здесь должна быть логика создания пользователя в БД
+	// Проверка существования пользователя
+	existingUser, _ := h.adminRepository.GetByEmail(newUser.Email)
+	if existingUser != nil {
+		c.JSON(http.StatusConflict, gin.H{"error": "Пользователь с таким email уже существует"})
+		return
+	}
+
+	// Хеширование пароля (используйте bcrypt)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка хеширования пароля"})
+		return
+	}
+
+	// Создание пользователя
+	admin := &models.Admin{
+		Email:    newUser.Email,
+		Password: string(hashedPassword),
+		Company:  newUser.Company,
+	}
+
+	if err := h.adminRepository.Create(admin); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка регистрации: " + err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusCreated, gin.H{
-		"message": "пользователь успешно зарегистрирован",
-		"user": gin.H{
-			"email":   newUser.Email,
-			"company": newUser.Company,
+		"message": "Регистрация успешна",
+		"admin": gin.H{
+			"email":   admin.Email,
+			"company": admin.Company,
 		},
 	})
 }

@@ -1,21 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-    Container,
-    Typography,
-    Box,
-    Button,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    IconButton,
-    CircularProgress,
-    Alert
-} from '@mui/material';
+import {Container,Typography,Box,Button,Table,TableBody,TableCell,TableContainer,TableHead,TableRow,Paper,IconButton,CircularProgress,Alert} from '@mui/material';
 import { Add, Edit, Delete } from '@mui/icons-material';
 import { getCategories, deleteCategory } from '../services/categoryService';
 import AdminLayout from '../layouts/AdminLayout';
@@ -53,7 +38,6 @@ const CategoriesPage = () => {
     };
 
     return (
-        <AdminLayout>
             <Container maxWidth="lg">
                 <Box sx={{
                     display: 'flex',
@@ -133,7 +117,6 @@ const CategoriesPage = () => {
                     </TableContainer>
                 )}
             </Container>
-        </AdminLayout>
     );
 };
 

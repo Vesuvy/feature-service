@@ -1,12 +1,6 @@
 package handlers
 
-import (
-	"context"
-	"database/sql"
-	"fmt"
-	"github.com/Vesuvy/feature-service/internal/models"
-)
-
+/*
 func (s *Storage) Save(ctx context.Context, feature *models.Feature) error {
 	q := `INSERT INTO features (name, desc, enabled, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)`
 
@@ -78,3 +72,4 @@ func (s *Storage) Update(ctx context.Context, feature *models.Feature) error {
 
 	return nil
 }
+*/

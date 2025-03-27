@@ -1,30 +1,19 @@
-import React, { useState } from 'react';
-import { Drawer, List, ListItem, ListItemIcon, ListItemText, Divider } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Box, List, ListItem, ListItemIcon, ListItemText, Divider } from '@mui/material';
 import {
     Dashboard as DashboardIcon,
     Category as CategoryIcon,
-    Flag as FeatureIcon,
-    People as UserIcon,
-    Settings as SettingsIcon
+    Flag as FeatureIcon
 } from '@mui/icons-material';
+import { Link } from 'react-router-dom';
 
 const drawerWidth = 240;
 
 const AdminDrawer = () => {
-    const [mobileOpen, setMobileOpen] = useState(false);
-    const navigate = useNavigate();
-
-    const handleDrawerToggle = () => {
-        setMobileOpen(!mobileOpen);
-    };
-
     const menuItems = [
-        { text: 'Дашборд', icon: <DashboardIcon />, path: '/admin' },
-        { text: 'Категории', icon: <CategoryIcon />, path: '/categories' },
-        { text: 'Фичи', icon: <FeatureIcon />, path: '/features' },
-        { text: 'Пользователи', icon: <UserIcon />, path: '/users' },
-        { text: 'Настройки', icon: <SettingsIcon />, path: '/settings' }
+        { text: 'Дашборд', icon: <DashboardIcon />, path: '/admin/dashboard' },
+        { text: 'Категории', icon: <CategoryIcon />, path: '/admin/categories' },
+        { text: 'Фичи', icon: <FeatureIcon />, path: '/admin/features' }
     ];
 
     return (
@@ -32,28 +21,22 @@ const AdminDrawer = () => {
             component="nav"
             sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
         >
-            <Drawer
-                variant="permanent"
-                sx={{
-                    '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-                }}
-                open
-            >
-                <Toolbar />
+            <Box sx={{ width: drawerWidth }}>
                 <Divider />
                 <List>
                     {menuItems.map((item) => (
                         <ListItem
                             button
                             key={item.text}
-                            onClick={() => navigate(item.path)}
+                            component={Link}
+                            to={item.path}
                         >
                             <ListItemIcon>{item.icon}</ListItemIcon>
                             <ListItemText primary={item.text} />
                         </ListItem>
                     ))}
                 </List>
-            </Drawer>
+            </Box>
         </Box>
     );
 };
