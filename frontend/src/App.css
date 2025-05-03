@@ -1,8 +1,23 @@
-#root {
+:root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0;
   text-align: center;
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  display: flex; /* Используем flexbox */
+  flex-direction: column; /* Вертикальное выравнивание */
+  align-items: center; /* Центрирование по горизонтали */
+  min-height: 100vh; /* Минимальная высота экрана */
 }
 
 .logo {
@@ -16,6 +31,31 @@
 }
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.navbar {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.8); /* или любой другой фон */
+  backdrop-filter: blur(10px); /* размытие фона (опционально) */
+  z-index: 1000; /* чтобы шапка была поверх других элементов */
+  padding: 1rem 0;
+  transition: all 0.3s ease;
+}
+
+/* Если экран меньше 768px, шапка перестает быть фиксированной */
+@media (max-width: 768px) {
+  .navbar {
+    position: static;
+  }
 }
 
 @keyframes logo-spin {

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Typography, Box, TextField, Button, Alert } from '@mui/material';
 import { createCategory } from '../services/categoryService';
-import AdminLayout from '../layouts/AdminLayout';
 
 const CreateCategoryPage = () => {
     const [name, setName] = useState('');
@@ -28,7 +27,6 @@ const CreateCategoryPage = () => {
     };
 
     return (
-        <AdminLayout>
             <Container maxWidth="md">
                 <Box sx={{ mt: 4 }}>
                     <Typography variant="h4" component="h1" gutterBottom>
@@ -75,7 +73,7 @@ const CreateCategoryPage = () => {
                             <Button
                                 variant="outlined"
                                 color="secondary"
-                                onClick={() => navigate('/categories')}
+                                onClick={() => navigate('/admin/categories')}
                             >
                                 Отмена
                             </Button>
@@ -92,7 +90,6 @@ const CreateCategoryPage = () => {
                     </Box>
                 </Box>
             </Container>
-        </AdminLayout>
     );
 };
 

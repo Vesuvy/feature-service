@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
-import { Container, Typography } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import {Box, Button, Container, Typography} from '@mui/material';
 import FeatureCard from '../components/feature/FeatureCard';
 import axios from 'axios';
+import {Add} from "@mui/icons-material";
+import {useNavigate} from "react-router-dom";
 
 // Моковые данные для тестирования
 const mockFeatures = [
@@ -46,6 +48,7 @@ const FeaturesPage = () => {
     const [features, setFeatures] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchFeatures = async () => {
@@ -98,7 +101,6 @@ const FeaturesPage = () => {
     if (loading) {
         return (
             <Container maxWidth="md" sx={{ py: 4 }}>
-                <h1>ФИЧИ</h1>
                 <Typography>Загрузка...</Typography>
             </Container>
         );
@@ -107,7 +109,6 @@ const FeaturesPage = () => {
     if (error) {
         return (
             <Container maxWidth="md" sx={{ py: 4 }}>
-                <h1>ФИЧИ</h1>
                 <Typography color="error">Ошибка: {error}</Typography>
             </Container>
         );
@@ -115,10 +116,26 @@ const FeaturesPage = () => {
 
     return (
         <Container maxWidth="md" sx={{ py: 4 }}>
-            <h1>ФИЧИ</h1>
-            <Typography variant="h4" component="h1" gutterBottom>
-                Управление фичами
-            </Typography>
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                mb: 3
+            }}>
+
+                <Typography variant="h4" component="h1" gutterBottom>
+                    Управление фичами
+                </Typography>
+                <Button
+                    variant="contained"
+                    startIcon={<Add />}
+                    onClick={() => navigate('/admin/createFeature')}
+                >
+                    Создать фичу
+                </Button>
+
+            </Box>
+
 
             {features.length === 0 ? (
                 <Typography>Нет доступных фич</Typography>

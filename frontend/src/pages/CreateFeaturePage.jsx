@@ -1,32 +1,153 @@
-import "./createFeaturePage.css"
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Container, Typography, Box, TextField, Button, Alert, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import { createFeature } from '../services/featureService';
+import { getCategories } from '../services/categoryService';
 
 const CreateFeaturePage = () => {
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
+    const [categoryId, setCategoryId] = useState('');
+    const [categories, setCategories] = useState([]);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            setLoading(true);
+            try {
+                const data = await getCategories();
+                setCategories(data);
+            } catch (err) {
+                setError('Не удалось загрузить категории');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        setSuccess(false);
+
+        try {
+            await createFeature({
+                name,
+                description,
+                category_id: categoryId
+            });
+
+            setSuccess(true);
+            setName('');
+            setDescription('');
+            setCategoryId('');
+
+            setTimeout(() => navigate('/features'), 1500);
+        } catch (err) {
+            setError(err.message || 'Ошибка при создании фичи');
+        }
+    };
+
     return (
-        <form className="form-container">
-            <h3>Добавить фичу</h3>
+            <Container maxWidth="md">
+                <Box sx={{ mt: 4 }}>
+                    <Typography variant="h4" component="h1" gutterBottom>
+                        Создание новой фичи
+                    </Typography>
 
-            <div className="form-group">
-                <label>Название</label>
-                <input type="text" className="form-input" />
-            </div>
+                    {error && (
+                        <Alert severity="error" sx={{ mb: 3 }}>
+                            {error}
+                        </Alert>
+                    )}
 
-            <div className="form-group">
-                <label>Описание</label>
-                <textarea className="form-input" />
-            </div>
+                    {success && (
+                        <Alert severity="success" sx={{ mb: 3 }}>
+                            Фича успешно создана!
+                        </Alert>
+                    )}
 
-            <div className="form-group">
-                <label>Категория</label>
-                <select className="form-select">
-                    <option>Выберите категорию</option>
-                </select>
-            </div>
+                    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+                        <TextField
+                            label="Название фичи"
+                            variant="outlined"
+                            fullWidth
+                            required
+                            margin="normal"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            inputProps={{ maxLength: 50 }}
+                        />
 
-            <button type="submit" className="btn_add">
-                Добавить
-            </button>
-        </form>
-    )
-}
+                        <TextField
+                            label="Описание"
+                            variant="outlined"
+                            fullWidth
+                            multiline
+                            rows={4}
+                            required
+                            margin="normal"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            inputProps={{ maxLength: 255 }}
+                        />
+
+                        <FormControl fullWidth margin="normal" required>
+                            <InputLabel id="category-select-label">Категория</InputLabel>
+                            <Select
+                                labelId="category-select-label"
+                                value={categoryId}
+                                label="Категория"
+                                onChange={(e) => setCategoryId(e.target.value)}
+                                disabled={loading}
+                            >
+                                <MenuItem value="">
+                                    <em>Выберите категорию</em>
+                                </MenuItem>
+                                {categories.map((category) => (
+                                    <MenuItem key={category.id} value={category.id}>
+                                        {category.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+
+                        <Box sx={{ mt: 2 }}>
+                            <Button
+                                variant="text"
+                                onClick={() => navigate('/admin/createCategory')}
+                            >
+                                + Создать новую категорию
+                            </Button>
+                        </Box>
+
+                        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                            <Button
+                                variant="outlined"
+                                color="secondary"
+                                onClick={() => navigate('/admin/features')}
+                            >
+                                Отмена
+                            </Button>
+
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                                disabled={!name.trim() || !description.trim() || !categoryId}
+                            >
+                                Создать фичу
+                            </Button>
+                        </Box>
+                    </Box>
+                </Box>
+            </Container>
+    );
+};
 
 export default CreateFeaturePage;

@@ -30,7 +30,6 @@ func InitDB() (*gorm.DB, error) {
 		&models.Feature{},
 		&models.Admin{},
 		&models.Category{},
-		&models.Company{},
 		&models.Environment{},
 		&models.Event_Type{},
 		&models.Enviroment_Feature_Category{},

@@ -51,7 +51,7 @@ const CategoriesPage = () => {
                     <Button
                         variant="contained"
                         startIcon={<Add />}
-                        onClick={() => navigate('/categories/createCategory')}
+                        onClick={() => navigate('/admin/categories/createCategory')}
                     >
                         Добавить категорию
                     </Button>
