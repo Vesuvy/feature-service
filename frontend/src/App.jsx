@@ -40,7 +40,7 @@ function App() {
 
                     <Route path="categories" element={<CategoriesPage />} />
                     <Route path="features" element={<FeaturesPage />} />
-                    <Route path="analytic" element={<AnalyticsPage />} />
+                    <Route path="analytics" element={<AnalyticsPage />} />
                     <Route path="dashboard" element={<AdminDashboardPage/>}/>
 
 

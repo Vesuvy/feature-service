@@ -17,28 +17,6 @@ export const createFeature = async (featureData) => {
     }
 };
 
-// ПОЛУЧЕНИЕ АНАЛИТИКИ
-export const getFeatureAnalytics = async () => {
-
-    try {
-        const response = await axios.get(`${API_URL}/analytics`, {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                'Content-Type': 'application/json'
-            }
-        });
-        return response.data.feature;
-    } catch (error) {
-        throw new Error(error.response?.data?.message || 'Failed to fetch analytics')
-    }
-};
-
-// ПОЛУЧЕНИЕ ПОДРОБНОЙ АНАЛИТИКИ
-export const getFeatureDetailedAnalytics = async (featureId) => {
-    const response = await api.get(`/features/${featureId}/detailed-analytics`);
-    return response.data;
-};
-
 // ПОЛУЧЕНИЕ СПИСКА ФИЧ
 export const getFeatures = async () => {
     try {
@@ -108,4 +86,43 @@ export const getFeaturesByCategory = async (categoryId) => {
     } catch (error) {
         throw new Error(error.response?.data?.message || 'Failed to fetch features by category');
     }
+};
+
+
+// АНАЛИТИКА
+// ПОЛУЧЕНИЕ АНАЛИТИКИ
+export const getFeatureAnalytics = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/features/analytics`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
+    } catch (error) {
+        throw new Error(error.response?.data?.message || 'Failed to fetch analytics')
+    }
+};
+
+// ПОЛУЧЕНИЕ ПОДРОБНОЙ АНАЛИТИКИ
+export const getFeatureDetailedAnalytics = async (featureId) => {
+    try {
+        const response = await axios.get(`${API_URL}/features/${featureId}/detailed-analytics`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
+    } catch (error) {
+        throw new Error(error.response?.data?.message || 'Failed to fetch detailed analytics');
+    }
+};
+
+// ЛОГИРОВАНИЕ
+export const logFeatureEvent = async (featureId, eventTypeId) => {
+    await axios.post(`${API_URL}/features/${featureId}/events`, eventTypeId, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
 };
