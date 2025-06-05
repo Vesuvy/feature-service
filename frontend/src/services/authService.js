@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5173';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
+//const API_URL = '';
 
 export const login = async (email, password) => {
     const response = await axios.post(`${API_URL}/login`, { email, password });

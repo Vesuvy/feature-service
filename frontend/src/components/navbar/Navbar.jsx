@@ -8,8 +8,7 @@ function Navbar() {
             boxShadow: 'none',
             py: 1,
         }}>
-            <Container maxWidth="xl">
-                <Toolbar sx={{
+            <Toolbar sx={{
                     display: 'flex',
                     justifyContent: 'space-between',
                     px: { xs: 0, sm: 0 }, // убираем лишние отступы
@@ -20,12 +19,12 @@ function Navbar() {
                         maxWidth: 1200,
                         width: '100%',
                         mx: 'auto',
-                        px: { xs: 2, sm: 3, md: 4 }
+                        px: { xs: 2, sm: 3, md: 4, lg: 6 },
                     }}>
                         <Typography
                             variant="h6"
                             component={Link}
-                            to="/"
+                            to="/api/v1"
                             sx={{
                                 fontWeight: 700,
                                 color: 'white',
@@ -38,10 +37,10 @@ function Navbar() {
                             <strong>FT</strong> Сервис
                         </Typography>
 
-                        <Box sx={{ display: 'flex', gap: 2 }}>
+                        <Box sx={{ display: 'flex', gap: 3 }}>
                             <Button className="navbar__NavLink"
                                     component={Link}
-                                    to="/"
+                                    to="/api/v1"
                                     color="inherit"
                                     sx={{ textTransform: 'none' }}
                             >
@@ -49,7 +48,7 @@ function Navbar() {
                             </Button>
                             <Button className="navbar__NavLink"
                                     component={Link}
-                                    to="/documentation"
+                                    to="/api/v1/documentation"
                                     color="inherit"
                                     sx={{ textTransform: 'none' }}
                             >
@@ -57,7 +56,7 @@ function Navbar() {
                             </Button>
                             <Button
                                 component={Link}
-                                to="/registration"
+                                to="/api/v1/registration"
                                 color="inherit"
                                 sx={{ textTransform: 'none' }}
                             >
@@ -65,7 +64,7 @@ function Navbar() {
                             </Button>
                             <Button
                                 component={Link}
-                                to="/login"
+                                to="/api/v1/login"
                                 color="inherit"
                                 sx={{ textTransform: 'none' }}
                             >
@@ -74,7 +73,6 @@ function Navbar() {
                         </Box>
                     </Toolbar>
                 </Toolbar>
-            </Container>
 
         </AppBar>
     );

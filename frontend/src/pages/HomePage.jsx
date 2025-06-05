@@ -27,7 +27,7 @@ const HomePage = () => {
                         variant="outlined"
                         color="violet"
                         component={Link}
-                        to="/login"
+                        to="/api/v1/login"
                         
                     >
                         Вход
@@ -36,7 +36,7 @@ const HomePage = () => {
                         variant="contained"
                         color="primary"
                         component={Link}
-                        to="/registration"
+                        to="/api/v1/registration"
                         size="large"
                         sx={{ minWidth: 200 }}
                     >

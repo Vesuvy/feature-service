@@ -59,7 +59,7 @@ const FeaturesPage = () => {
                     setFeatures(mockFeatures);
                 } else {
                     // Реальный запрос к API
-                    const response = await axios.get('/api/features');
+                    const response = await axios.get('/api/v1/admin/features');
                     setFeatures(response.data);
                 }
                 setError(null);
@@ -88,7 +88,7 @@ const FeaturesPage = () => {
                 console.log(`Фича ${featureId} удалена (мок)`);
             } else {
                 // Реальный запрос на удаление
-                await axios.delete(`/api/features/${featureId}`);
+                await axios.delete(`/api/v1/admin/features/${featureId}`);
                 setFeatures(features.filter(f => f.id !== featureId));
             }
             setError(null);
@@ -129,7 +129,7 @@ const FeaturesPage = () => {
                 <Button
                     variant="contained"
                     startIcon={<Add />}
-                    onClick={() => navigate('/admin/createFeature')}
+                    onClick={() => navigate('/api/v1/admin/createFeature')}
                 >
                     Создать фичу
                 </Button>

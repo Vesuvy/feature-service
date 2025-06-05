@@ -5,10 +5,10 @@ import AdminDrawer from '../components/AdminDrawer/AdminDrawer';
 
 const AdminLayout = () => {
     return (
-        <Box sx={{ display: 'flex' }}>
+        <Box sx={{ display: '' }}>
             <AdminDrawer />
 
-            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+            <Box component="main" sx={{ flexGrow: 1, p: 1 }}>
                 <Toolbar /> {/* Для отступа под AppBar */}
                 <Outlet />
             </Box>

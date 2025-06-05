@@ -17,7 +17,7 @@ const LoginPage = () => {
 
         try {
             await login(email, password);
-            navigate('/dashboard');
+            navigate('/api/v1/admin/dashboard');
         } catch (err) {
             setError(err.message || 'Ошибка входа');
         } finally {

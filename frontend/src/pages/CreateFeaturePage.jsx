@@ -47,7 +47,7 @@ const CreateFeaturePage = () => {
             setDescription('');
             setCategoryId('');
 
-            setTimeout(() => navigate('/features'), 1500);
+            setTimeout(() => navigate('/api/v1/admin/features'), 1500);
         } catch (err) {
             setError(err.message || 'Ошибка при создании фичи');
         }
@@ -120,7 +120,7 @@ const CreateFeaturePage = () => {
                         <Box sx={{ mt: 2 }}>
                             <Button
                                 variant="text"
-                                onClick={() => navigate('/admin/createCategory')}
+                                onClick={() => navigate('/api/v1/admin/createCategory')}
                             >
                                 + Создать новую категорию
                             </Button>
@@ -130,7 +130,7 @@ const CreateFeaturePage = () => {
                             <Button
                                 variant="outlined"
                                 color="secondary"
-                                onClick={() => navigate('/admin/features')}
+                                onClick={() => navigate('/api/v1/admin/features')}
                             >
                                 Отмена
                             </Button>

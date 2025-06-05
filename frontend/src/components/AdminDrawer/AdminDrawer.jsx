@@ -13,20 +13,15 @@ const drawerWidth = 240;
 
 const AdminDrawer = () => {
     const menuItems = [
-        { text: 'Фичи', icon: <FeatureIcon />, path: '/admin/features' },
-        { text: 'Категории Фич', icon: <CategoryIcon />, path: '/admin/categories' },
+        { text: 'Аналитика', icon: <AnalyticsIcon />, path: '/api/v1/admin/analytics' },
 
-        { text: 'Группы Пользователей', icon: <TagIcon />, path: '/admin/tags' },
-
-        { text: 'Аналитика', icon: <AnalyticsIcon />, path: '/admin/analytics' },
-
-        { text: 'Расписание', icon: <DashboardIcon />, path: '/admin/dashboard' }
+        { text: 'Панель управления', icon: <DashboardIcon />, path: '/api/v1/admin/dashboard' }
     ];
 
     return (
         <Box
             component="nav"
-            sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+            sx={{ width: { sm: 150 }, flexShrink: { sm: 0 } }}
         >
             <Box sx={{ width: drawerWidth }}>
                 <Divider />

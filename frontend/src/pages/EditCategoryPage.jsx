@@ -37,7 +37,7 @@ const EditCategoryPage = () => {
         try {
             await updateCategory(Number(id), { name, description });
             setSuccess(true);
-            setTimeout(() => navigate('/categories'), 1500);
+            setTimeout(() => navigate('/api/v1/admin/categories'), 1500);
         } catch (err) {
             setError(err.message || 'Ошибка при обновлении категории');
         }

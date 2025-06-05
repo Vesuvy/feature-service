@@ -1,6 +1,6 @@
 :root {
-  max-width: 1280px;
-  margin: 0 auto;
+  
+  margin: 0;
   padding: 0;
   text-align: center;
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -16,7 +16,7 @@
 
   display: flex; /* Используем flexbox */
   flex-direction: column; /* Вертикальное выравнивание */
-  align-items: center; /* Центрирование по горизонтали */
+  align-items: stretch; /* Центрирование по горизонтали */
   min-height: 100vh; /* Минимальная высота экрана */
 }
 
@@ -35,7 +35,6 @@
 
 .container {
   width: 100%;
-  max-width: 1280px;
   margin: 0 auto;
   padding: 0 1rem;
 }

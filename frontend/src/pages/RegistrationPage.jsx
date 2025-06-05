@@ -26,7 +26,7 @@ const RegistrationPage = () => {
 
         try {
             await register(email, password, company);
-            navigate('/login', { state: { registrationSuccess: true } });
+            navigate('/api/v1/login', { state: { registrationSuccess: true } });
         } catch (err) {
             setError(err.response?.data?.error || 'Ошибка регистрации');
         } finally {
@@ -112,7 +112,7 @@ const RegistrationPage = () => {
 
                     <Typography variant="body2" align="center" color="text.primary">
                         Уже есть аккаунт?{' '}
-                        <Button onClick={() => navigate('/login')} color="primary" >
+                        <Button onClick={() => navigate('/api/v1/login')} color="primary" >
                             Войти
                         </Button>
                     </Typography>

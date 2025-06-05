@@ -20,7 +20,7 @@ const CreateCategoryPage = () => {
             setSuccess(true);
             setName('');
             setDescription('');
-            setTimeout(() => navigate('/categories'), 1500);
+            setTimeout(() => navigate('/api/v1/admin/categories'), 1500);
         } catch (err) {
             setError(err.response?.data?.error || 'Ошибка при создании категории');
         }
@@ -73,7 +73,7 @@ const CreateCategoryPage = () => {
                             <Button
                                 variant="outlined"
                                 color="secondary"
-                                onClick={() => navigate('/admin/categories')}
+                                onClick={() => navigate('/api/v1/admin/categories')}
                             >
                                 Отмена
                             </Button>
