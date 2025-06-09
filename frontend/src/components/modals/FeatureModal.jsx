@@ -156,7 +156,13 @@ const FeatureModal = ({ open, handleClose, feature }) => {
                         />
                     }
                     label="Включена"
-                    sx={{ mb: 2 }}
+                    sx={{ 
+                        mb: 2,
+                        '& .MuiFormControlLabel-label': {
+                            color: 'black'
+                        }
+                    }}
+                    
                 />
                 
                 {/* Выбор категорий */}

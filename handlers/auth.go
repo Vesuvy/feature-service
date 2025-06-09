@@ -41,6 +41,16 @@ func RegisterHandler(c *gin.Context, dbStruct *service.DbStruct) {
 		}
 	}
 
+	// Создаем тестовое окружение по умолчанию для новой компании
+	defaultEnv := models.Environment{
+		Title:     "Testing",
+		CompanyID: existingCompany.ID,
+	}
+	if err := dbStruct.DB.Create(&defaultEnv).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при создании окружения по умолчанию: " + err.Error()})
+		return
+	}
+
 	// Хеширование пароля
 	hashedPassword, err := service.HashPassword(input.Password)
 	if err != nil {

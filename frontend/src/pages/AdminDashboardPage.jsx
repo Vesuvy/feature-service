@@ -6,8 +6,11 @@ import {
     FormControlLabel, Tooltip
 } from '@mui/material';
 import { Add, Edit, Delete, Category, LocalOffer } from '@mui/icons-material';
-import AdminLayout from '../layouts/AdminLayout';
-import { getFeatures, createFeature, updateFeature, deleteFeature } from '../services/featureService';
+import { 
+    getFeatures, createFeature, updateFeature, deleteFeature, 
+    getFeatureCategories, toggleFeatureForTags as apiToggleFeatureForTags, 
+    getFeatureTags as apiGetFeatureTags 
+} from '../services/featureService';
 import { getCategories, createCategory, updateCategory, deleteCategory } from '../services/categoryService';
 import { getTags, createTag, updateTag, deleteTag } from '../services/tagService'; 
 import FeatureModal from '../components/modals/FeatureModal'; 
@@ -16,6 +19,7 @@ import TagModal from '../components/modals/TagModal';
 
 const AdminDashboardPage = () => {
     const [featureTagStatuses, setFeatureTagStatuses] = useState({});
+    const [featureCategoriesMap, setFeatureCategoriesMap] = useState({});
     const [features, setFeatures] = useState([]);
     const [categories, setCategories] = useState([]);
     const [tags, setTags] = useState([]);
@@ -68,6 +72,19 @@ const AdminDashboardPage = () => {
             setCategories(categoriesData);
             setTags(tagsData);
             
+            // Загружаем категории для каждой фичи
+            const categoriesMap = {};
+            for (const feature of featuresData) {
+                try {
+                    const featureCategories = await getFeatureCategories(feature.id);
+                    categoriesMap[feature.id] = featureCategories || [];
+                } catch (err) {
+                    console.error(`Error loading categories for feature ${feature.id}:`, err);
+                    categoriesMap[feature.id] = [];
+                }
+            }
+            setFeatureCategoriesMap(categoriesMap);
+            
             // После получения фич и тегов, получаем статусы
             await fetchFeatureTagStatuses();
         } catch (err) {
@@ -86,7 +103,7 @@ const AdminDashboardPage = () => {
             
             // Для каждой фичи получаем статусы для тегов
             for (const feature of features) {
-                const tagStatuses = await getFeatureTags(feature.id);
+                const tagStatuses = await apiGetFeatureTags(feature.id);
                 statuses[feature.id] = {};
                 
                 // Преобразуем массив в объект для удобного доступа
@@ -110,22 +127,36 @@ const AdminDashboardPage = () => {
 
     // --- Feature Handlers ---
     // Функция для получения категорий фичи
-    const getFeatureCategories = async (featureId) => {
+    const fetchFeatureCategories = async (featureId) => {
         try {
-            return await getFeatureCategories(featureId);
+            // Используем импортированную функцию из сервиса
+            const categories = await getFeatureCategories(featureId);
+            return categories;
         } catch (error) {
             console.error('Error fetching feature categories:', error);
             return [];
         }
     };
 
-    const toggleFeatureForTags = async (featureId, tagIds, enabled) => {
+    const toggleFeatureTagStatus = async (featureId, tagIds, enabled) => {
         try {
+            console.log(`Toggling feature ${featureId} for tags ${JSON.stringify(tagIds)} to ${enabled}`);
             setLoading(true);
             setError(null);
-            await toggleFeatureForTags(featureId, tagIds, enabled);
-            // Обновляем состояние таблицы
-            fetchFeatureTagStatuses();
+            await apiToggleFeatureForTags(featureId, tagIds, enabled);
+            
+            // Обновляем только состояние конкретной фичи и тега
+            setFeatureTagStatuses(prevStatuses => {
+                const newStatuses = {...prevStatuses};
+                if (!newStatuses[featureId]) newStatuses[featureId] = {};
+                
+                // Обновляем статус для каждого тега в массиве tagIds
+                tagIds.forEach(tagId => {
+                    newStatuses[featureId][tagId] = enabled;
+                });
+                
+                return newStatuses;
+            });
         } catch (err) {
             setError(err.message || 'Ошибка при обновлении статуса фичи для тегов');
             console.error(`Toggle feature ${featureId} for tags ${tagIds} to ${enabled} error:`, err);
@@ -265,10 +296,8 @@ const AdminDashboardPage = () => {
                                                     </TableCell>
                                                 </TableRow>
                                             ) : (
-                                                features.map(feature => {
-                                                    const featureCategories = getFeatureCategories(feature.id);
-                                                    return (
-                                                        <TableRow key={feature.id}>
+                                                features.map(feature => (
+                                                    <TableRow key={feature.id}>
                                                             <TableCell>
                                                                 <Typography variant="body1" fontWeight="medium">
                                                                     {feature.title}
@@ -296,7 +325,7 @@ const AdminDashboardPage = () => {
                                                             </TableCell>
                                                             <TableCell>
                                                                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                                                    {featureCategories.map(category => (
+                                                                    {(featureCategoriesMap[feature.id] || []).map(category => (
                                                                         <Chip 
                                                                             key={category.id}
                                                                             label={category.title}
@@ -327,9 +356,8 @@ const AdminDashboardPage = () => {
                                                                     </IconButton>
                                                                 </Tooltip>
                                                             </TableCell>
-                                                        </TableRow>
-                                                    );
-                                                })
+                                                        </TableRow>                                                                                               
+                                                ))
                                             )}
                                         </TableBody>
                                     </Table>
@@ -496,12 +524,12 @@ const AdminDashboardPage = () => {
                                                             {feature.title}
                                                         </Typography>
                                                     </TableCell>
-                                                    {tags.map(tag => (
+                                                    {tags.sort((a, b) => a.id - b.id).map(tag => (
                                                         <TableCell key={tag.id} align="center">
                                                             <Switch
                                                                 size="small"
                                                                 checked={featureTagStatuses[feature.id]?.[tag.id] || false}
-                                                                onChange={(e) => toggleFeatureForTags(feature.id, [tag.id], e.target.checked)}
+                                                                onChange={(e) => toggleFeatureTagStatus(feature.id, [tag.id], e.target.checked)}
                                                             />
                                                         </TableCell>
                                                     ))}

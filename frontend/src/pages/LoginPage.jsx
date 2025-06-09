@@ -32,9 +32,12 @@ const LoginPage = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                bgcolor: 'background.paper'
+                bgcolor: 'background.paper',
+                p: 4,
+                borderRadius: 2,
+                boxShadow: 3
             }}>
-                <Typography component="h1" variant="h5">
+                <Typography component="h1" variant="h5" color="black">
                     Вход в систему
                 </Typography>
 

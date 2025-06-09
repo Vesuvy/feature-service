@@ -2,12 +2,10 @@ package main
 
 import (
 	"log"
-	"time"
 
 	"github.com/Vesuvy/feature-service/config"
 	"github.com/Vesuvy/feature-service/handlers"
 	"github.com/Vesuvy/feature-service/middleware"
-	"github.com/Vesuvy/feature-service/models"
 	"github.com/Vesuvy/feature-service/service"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -26,13 +24,14 @@ func main() {
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		AllowCredentials: true,
 	}))
-	// Создание администратора по умолчанию, чтобы не было ошибок при создании админа
-	dbStruct.DB.Create(&models.Company{ID: 1, Title: "Default Company"})
+	/*
+		// Создание администратора по умолчанию, чтобы не было ошибок при создании админа
+		dbStruct.DB.Create(&models.Company{ID: 1, Title: "Default Company"})
 
-	defaultPassword := "admin"
-	hashedPassword, _ := service.HashPassword(defaultPassword)
-	dbStruct.DB.Create(&models.Admin{Email: "admin@ex.com", Password: hashedPassword, CompanyID: 1, RegistrationDate: time.Now()})
-
+		defaultPassword := "admin"
+		hashedPassword, _ := service.HashPassword(defaultPassword)
+		dbStruct.DB.Create(&models.Admin{Email: "admin@ex.com", Password: hashedPassword, CompanyID: 1, RegistrationDate: time.Now()})
+	*/
 	// Публичные маршруты
 	r.POST("/api/v1/registration", func(c *gin.Context) {
 		handlers.RegisterHandler(c, dbStruct)

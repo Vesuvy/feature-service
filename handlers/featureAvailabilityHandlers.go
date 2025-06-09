@@ -30,6 +30,20 @@ func ToggleFeatureForTagsHandler(c *gin.Context, dbStruct *service.DbStruct) {
 		return
 	}
 
+	// Получаем окружение по умолчанию для компании
+	var defaultEnv models.Environment
+	if err := dbStruct.DB.Where("company_id = ? AND title = ?", companyID, "Default").First(&defaultEnv).Error; err != nil {
+		// Если окружение по умолчанию не найдено, создаем его
+		defaultEnv = models.Environment{
+			Title:     "Default",
+			CompanyID: companyID.(uint),
+		}
+		if err := dbStruct.DB.Create(&defaultEnv).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при создании окружения по умолчанию: " + err.Error()})
+			return
+		}
+	}
+
 	// Для каждого тега обновляем или создаем запись FeatureAvailability
 	for _, tagID := range request.TagIDs {
 		// Проверяем, существует ли тег и принадлежит ли он компании
@@ -40,14 +54,15 @@ func ToggleFeatureForTagsHandler(c *gin.Context, dbStruct *service.DbStruct) {
 
 		// Ищем существующую запись
 		var availability models.FeatureAvailability
-		result := dbStruct.DB.Where("feature_id = ? AND tag_id = ?", parseUint(featureID), tagID).First(&availability)
+		result := dbStruct.DB.Where("feature_id = ? AND tag_id = ? AND environment_id = ?", parseUint(featureID), tagID, defaultEnv.ID).First(&availability)
 
 		if result.Error != nil {
 			// Создаем новую запись, если не существует
 			availability = models.FeatureAvailability{
-				FeatureID: parseUint(featureID),
-				TagID:     tagID,
-				IsActive:  request.IsActive,
+				FeatureID:     parseUint(featureID),
+				TagID:         tagID,
+				EnvironmentID: defaultEnv.ID,
+				IsActive:      request.IsActive,
 			}
 			dbStruct.DB.Create(&availability)
 		} else {
@@ -72,6 +87,20 @@ func GetFeatureTagsHandler(c *gin.Context, dbStruct *service.DbStruct) {
 		return
 	}
 
+	// Получаем окружение по умолчанию для компании
+	var defaultEnv models.Environment
+	if err := dbStruct.DB.Where("company_id = ? AND title = ?", companyID, "Default").First(&defaultEnv).Error; err != nil {
+		// Если окружение по умолчанию не найдено, создаем его
+		defaultEnv = models.Environment{
+			Title:     "Default",
+			CompanyID: companyID.(uint),
+		}
+		if err := dbStruct.DB.Create(&defaultEnv).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при создании окружения по умолчанию: " + err.Error()})
+			return
+		}
+	}
+
 	// Получаем все теги компании
 	var tags []models.Tag
 	if err := dbStruct.DB.Where("company_id = ?", companyID).Find(&tags).Error; err != nil {
@@ -91,8 +120,8 @@ func GetFeatureTagsHandler(c *gin.Context, dbStruct *service.DbStruct) {
 		var availability models.FeatureAvailability
 		isActive := false
 
-		// Проверяем, есть ли запись в FeatureAvailability
-		if err := dbStruct.DB.Where("feature_id = ? AND tag_id = ?", parseUint(featureID), tag.ID).First(&availability).Error; err == nil {
+		// Проверяем, есть ли запись в FeatureAvailability с учетом окружения
+		if err := dbStruct.DB.Where("feature_id = ? AND tag_id = ? AND environment_id = ?", parseUint(featureID), tag.ID, defaultEnv.ID).First(&availability).Error; err == nil {
 			isActive = availability.IsActive
 		}
 
@@ -103,5 +132,5 @@ func GetFeatureTagsHandler(c *gin.Context, dbStruct *service.DbStruct) {
 		})
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "статусы выданы"})
+	c.JSON(http.StatusOK, gin.H{"tags": result, "message": "статусы выданы"})
 }

@@ -2,12 +2,13 @@ package service
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/Vesuvy/feature-service/config"
 	"github.com/Vesuvy/feature-service/models"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"log"
 )
 
 type DbStruct struct {

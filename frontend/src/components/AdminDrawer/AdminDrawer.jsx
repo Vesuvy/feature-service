@@ -28,7 +28,6 @@ const AdminDrawer = () => {
                 <List>
                     {menuItems.map((item) => (
                         <ListItem
-                            button
                             key={item.text}
                             component={Link}
                             to={item.path}

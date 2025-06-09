@@ -46,7 +46,7 @@ const RegistrationPage = () => {
                 borderRadius: 2,
                 boxShadow: 3
             }}>
-                <Typography component="h1" variant="h5">
+                <Typography component="h1" variant="h5" color="black">
                     Регистрация
                 </Typography>
 
