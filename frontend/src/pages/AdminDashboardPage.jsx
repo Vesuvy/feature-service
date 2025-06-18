@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { 
     Box, Typography, Button, Container, Grid, Paper, IconButton, 
     CircularProgress, Alert, Table, TableBody, TableCell, 
@@ -16,6 +16,7 @@ import { getTags, createTag, updateTag, deleteTag } from '../services/tagService
 import FeatureModal from '../components/modals/FeatureModal'; 
 import CategoryModal from '../components/modals/CategoryModal';
 import TagModal from '../components/modals/TagModal';
+import AdminDashboardUserAdd from '../components/AdminDashboardUserAdd';
 
 const AdminDashboardPage = () => {
     const [featureTagStatuses, setFeatureTagStatuses] = useState({});
@@ -33,6 +34,7 @@ const AdminDashboardPage = () => {
     const [selectedFeature, setSelectedFeature] = useState(null);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [selectedTag, setSelectedTag] = useState(null);
+
 
     /* БЫЛО
     const fetchData = async () => {
@@ -372,7 +374,7 @@ const AdminDashboardPage = () => {
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                                     <Typography variant="h6">Категории</Typography>
                                     <Button variant="contained" startIcon={<Add />} onClick={handleAddCategory}>
-                                        Добавить
+                                        Добавить категорию
                                     </Button>
                                 </Box>
                                 <TableContainer>
@@ -435,7 +437,7 @@ const AdminDashboardPage = () => {
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                                     <Typography variant="h6">Теги</Typography>
                                     <Button variant="contained" startIcon={<Add />} onClick={handleAddTag}>
-                                        Добавить
+                                        Добавить тег
                                     </Button>
                                 </Box>
                                 <TableContainer>
@@ -560,6 +562,7 @@ const AdminDashboardPage = () => {
                     handleClose={handleTagModalClose}
                     tag={selectedTag}
                 />
+               
 
             </Container>
     );

@@ -43,6 +43,7 @@ func (dbStruct *DbStruct) InitDB() {
 		&models.FeatureCategory{},
 		&models.FeatureUsage{},
 		&models.Tag{},
+		&models.User{},
 	); err != nil {
 		log.Fatal("ошибка миграции моделей:", err)
 	} else {

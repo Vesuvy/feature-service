@@ -48,7 +48,7 @@ function Navbar() {
                             </Button>
                             <Button className="navbar__NavLink"
                                     component={Link}
-                                    to="/api/v1/documentation"
+                                    to="/api/v1/docs"
                                     color="inherit"
                                     sx={{ textTransform: 'none' }}
                             >

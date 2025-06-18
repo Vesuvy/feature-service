@@ -124,7 +124,7 @@ const FeatureModal = ({ open, handleClose, feature }) => {
             aria-describedby="modal-description"
         >
             <Box sx={style} component="form" onSubmit={handleSubmit}>
-                <Typography id="modal-title" variant="h6" component="h2" sx={{ mb: 2 }}>
+                <Typography id="modal-title" variant="h6" component="h2" sx={{ mb: 2 }} color="black">
                     {feature ? 'Редактировать фичу' : 'Добавить фичу'}
                 </Typography>
                 {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}

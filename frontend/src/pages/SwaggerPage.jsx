@@ -6,7 +6,7 @@ const SwaggerPage = () => {
     return (
         <div style={{ padding: '20px' }}>
             <SwaggerUI
-                url="http://localhost:8080/swagger/doc.json"
+                url="http://localhost:8080/api/v1/docs/swagger.json"
                 tryItOutEnabled={true}
             />
         </div>

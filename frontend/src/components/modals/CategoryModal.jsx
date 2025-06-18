@@ -74,7 +74,7 @@ const CategoryModal = ({ open, handleClose, category }) => {
             aria-describedby="modal-description"
         >
             <Box sx={style} component="form" onSubmit={handleSubmit}>
-                <Typography id="modal-title" variant="h6" component="h2" sx={{ mb: 2 }}>
+                <Typography id="modal-title" variant="h6" component="h2" sx={{ mb: 2 }} color="black">
                     {category ? 'Редактировать категорию' : 'Добавить категорию'}
                 </Typography>
                 {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}

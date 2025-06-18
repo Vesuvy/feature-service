@@ -1,7 +1,10 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/Vesuvy/feature-service/models"
 	"github.com/Vesuvy/feature-service/service"
@@ -133,4 +136,56 @@ func GetFeatureTagsHandler(c *gin.Context, dbStruct *service.DbStruct) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"tags": result, "message": "статусы выданы"})
+}
+
+// Проверить доступность фичи для пользователя
+func IsFeatureActiveForUserHandler(c *gin.Context, dbStruct *service.DbStruct) {
+	userID := c.Param("userID")
+	featureID := c.Param("featureID")
+	companyID, _ := c.Get("company_id")
+	var user models.User
+	if err := dbStruct.DB.Where("id = ? AND company_id = ?", parseUint(userID), companyID).First(&user).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "пользователь не найден"})
+		return
+	}
+	tagIDs := []uint{}
+	for _, s := range strings.Split(user.TagIDs, ",") {
+		if s == "" {
+			continue
+		}
+		if id, err := strconv.ParseUint(s, 10, 64); err == nil {
+			tagIDs = append(tagIDs, uint(id))
+		}
+	}
+	var count int64
+	if len(tagIDs) > 0 {
+		dbStruct.DB.Model(&models.FeatureAvailability{}).
+			Where("feature_id = ? AND tag_id IN ? AND company_id = ? AND is_active = ?", parseUint(featureID), tagIDs, companyID, true).
+			Count(&count)
+	}
+	c.JSON(http.StatusOK, gin.H{"active": count > 0})
+}
+
+func GetActiveUsersForFeatureHandler(c *gin.Context, dbStruct *service.DbStruct) {
+	featureID := c.Param("featureID")
+	companyID, _ := c.Get("company_id")
+	// Получаем все теги, для которых фича активна
+	var fa []models.FeatureAvailability
+	dbStruct.DB.Where("feature_id = ? AND company_id = ? AND is_active = ?", parseUint(featureID), companyID, true).Find(&fa)
+	tagIDs := make([]string, 0)
+	for _, f := range fa {
+		tagIDs = append(tagIDs, fmt.Sprint(f.TagID))
+	}
+	if len(tagIDs) == 0 {
+		c.JSON(http.StatusOK, gin.H{"users": []models.User{}})
+		return
+	}
+	// Получаем пользователей, у которых есть хотя бы один из этих тегов
+	var users []models.User
+	query := dbStruct.DB.Where("company_id = ?", companyID)
+	for _, tagID := range tagIDs {
+		query = query.Or("tag_ids LIKE ?", "%"+tagID+"%")
+	}
+	query.Find(&users)
+	c.JSON(http.StatusOK, gin.H{"users": users})
 }
